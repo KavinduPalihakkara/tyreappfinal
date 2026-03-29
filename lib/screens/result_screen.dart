@@ -23,7 +23,16 @@ class _ResultScreenState extends State<ResultScreen> {
     _analyzeImage();
   }
 
+  @override
+  void dispose() {
+    // Clean up TFLite service resources
+    _mlService.close();
+    super.dispose();
+  }
+
   Future<void> _analyzeImage() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -291,11 +300,14 @@ class _ResultScreenState extends State<ResultScreen> {
     String description = "";
 
     if (resultString.toLowerCase().contains("accept")) {
-      description = "No visible defects. The tyre is structurally sound and in good condition for continued use in industrial sites.";
+      description =
+          "No visible defects. The tyre is structurally sound and in good condition for continued use in industrial sites.";
     } else if (resultString.toLowerCase().contains("repair")) {
-      description = "Minor faults such as surface cracks or tread wear detected. The tyre may be repaired to restore safety and usability.";
+      description =
+          "Minor faults such as surface cracks or tread wear detected. The tyre may be repaired to restore safety and usability.";
     } else if (resultString.toLowerCase().contains("reject")) {
-      description = "Critical structural damages such as deep cuts or sidewall damage detected. The tyre is unsafe and must be rejected permanently.";
+      description =
+          "Critical structural damages such as deep cuts or sidewall damage detected. The tyre is unsafe and must be rejected permanently.";
     } else {
       return const SizedBox.shrink();
     }
